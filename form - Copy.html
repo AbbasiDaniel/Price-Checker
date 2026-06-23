@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Connection</title>
+    <style>
+    #submit
+    {
+        width: 500px;      
+        height: 40px;      
+        font-size: 18px;   
+        padding: 8px;
+        background-color: purple;
+    }
+    body
+    {
+        background-color: gray;
+    }
+    #c
+    {
+        position: fixed;
+        right :100px;
+        bottom: 415px;
+        color: aliceblue; 
+    }
+    #b
+    {
+        position : fixed;
+        left : 500px;
+        bottom :0px;
+        font-size: small;
+        color :chocolate;
+    }
+    #a
+    {
+        position: fixed;
+        font-size: larger;
+        color: purple;
+        background-color: gray;
+        width: 300px;
+        margin: 0px;  
+        padding: 0px;
+        left : 5px;
+        bottom: 165px;
+    }
+    input
+    {
+        width: 800px;      
+        height: 20px;      
+        font-size: 18px;   
+        padding: 8px;
+    }
+h3{
+    color : orangered;
+    
+}
+table {
+            position: fixed;
+            bottom: 50px;
+            right : 0px;
+            width: 42%;                
+            margin: 40px 40px 40px auto;   
+            border-collapse: collapse;
+            background-color: #f0f0f0;
+        }
+
+th, td {
+            padding: 1px;
+            border: 1px solid yellowgreen;
+            text-align: center;
+            color : blue;
+        }
+
+th {
+            background-color: #cf1616;
+            color: white;
+ }
+h1
+{
+  color: black;
+}
+#wowo
+{
+    color:black;
+}
+
+
+
+    </style>
+</head>
+<body>
+    <h1>PRICE CHECKER.beta</h1>
+    <h2 id="wowo">working only in <a href="https://www.ebay.com/" target="_blank">ebay</a> And 
+        <a href="https://www.walmart.com/" target="_blank"> Wamlart </a> will be updated every 6 hours</h2>
+    <div id="a">
+    <form method="POST" action="/">
+        <h2>enter the link</h2>
+        <input type="text" name="ProductUrl" placeholder="Paste link here" required><br>
+        <h2>enter the price</h2>        
+        <input type="number" name="TargetPrice" placeholder="Paste link here" required><br>
+        <h2>enter the email</h2>
+        <input type="email" name="Email" placeholder="Paste link here" required><br>
+        <br>
+        <button id="submit" type="submit">Submit</button>
+    </form>
+    </div id ="b">
+    <div id="c">
+    <table>
+    <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Email</th>
+        <th>Product URL</th>
+        <th>Cuurent price</th>
+        <th>Target Price</th>
+        <th>Notified</th>
+    </tr>
+    {% for t in trackers %}
+    <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.user_id }}</td>
+        <td>{{ t.email }}</td>
+        <td><a href="{{ t.product_url }}" target="_blank">View Product</a></td>
+        <td>{{t.current_price}}</td>
+        <td>{{ t.target_price }}</td>
+        <td>{{ t.notified }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+</body>
+</html>
