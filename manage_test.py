@@ -9,8 +9,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time, re, threading, sqlite3 , random , math , os
 from selenium.webdriver.common.action_chains import ActionChains 
 from flask import redirect, url_for
-import requests 
-app = Flask(__name__)
+import requests, json 
+import price_ai
+import random
+app = Flask(__name__, template_folder='.')
 Api_Key="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"
 CHROMEDRIVER_PATH = r"C:\Users\Daniel\Desktop\chromedriver144\chromedriver-win64\chromedriver.exe"
 SELENIUM_PROFILE = r"C:\Users\Daniel\Desktop\selenium_profile"
@@ -26,7 +28,6 @@ def get_all_trackers():
     return rows
 
 def get_driver():
-    #print("hello")
     options = uc.ChromeOptions()
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--no-first-run")
@@ -67,17 +68,13 @@ def get_price_with_selenium(url, wait_seconds=120):
     finally:
         driver.quit()
 
-#########################################################
 def get_price_from_walmart(url):
     price = get_price_with_selenium(url, wait_seconds=15)
-    #print("**********")
-    #print(price)
     if price is not None:
         print("Price found via Selenium:", price, flush=True)
     return price
 
 def init_db():
-    #check_prices()
     Connection = sqlite3.connect("trackers.db")
     Edit = Connection.cursor()
     Edit.execute("""
@@ -88,7 +85,9 @@ def init_db():
             product_url TEXT NOT NULL,
             current_price REAL,     
             target_price REAL NOT NULL,
-            notified BOOLEAN DEFAULT 0
+            notified BOOLEAN DEFAULT 0,
+            price_history TEXT,
+            predicted_price TEXT
         )
     """)
     Connection.commit()
@@ -104,22 +103,61 @@ def add_tracker(user_id, email, product_url,current_price, target_price):
     Connection.commit()
     Connection.close()
 
+
+
+def update_predicition(tracker_id):
+    Connection = sqlite3.connect("trackers.db")
+    Edit = Connection.cursor()
+    Edit.execute("SELECT price_history FROM trackers WHERE id = ?", (tracker_id,))
+    row = Edit.fetchone()
+    if row and row[0]:
+        price_list = json.loads(row[0])
+    else:
+        price_list = []
+    if len(price_list)>=10:
+        predicted_price=price_ai.predict_price(price_list[len(price_list)-10 : len(price_list)])
+        predicted_price=json.dumps(predicted_price)
+        Edit.execute("UPDATE trackers SET predicted_price = ? WHERE id = ?", (predicted_price,tracker_id,))
+    
+    Connection.commit()
+    Connection.close()
+    return None
+ 
+def update_history(current_price, tracker_id):
+
+    Connection = sqlite3.connect("trackers.db")
+    Edit = Connection.cursor()
+    Edit.execute("SELECT price_history FROM trackers WHERE id = ?", (tracker_id,))
+    row = Edit.fetchone()
+    if row and row[0]:
+        price_list = json.loads(row[0])
+    else:
+        price_list = []
+    price_list.append(current_price)
+    price_list=json.dumps(price_list)
+    Edit.execute("UPDATE trackers SET price_history = ? WHERE id = ?", (price_list,tracker_id,))
+    Connection.commit()
+    Connection.close()
+    return None
+
+
 def check_prices():
     Connection = sqlite3.connect("trackers.db")
     Edit = Connection.cursor()
     Edit.execute("SELECT id, email, product_url, target_price FROM trackers WHERE notified = 0")
     List = Edit.fetchall()
-    print("price checker function")
     for row in List:
         tracker_id, email, product_url, target_price = row
-        print("walmarting...")
         current_price = get_price_from_walmart(product_url)
+        #############
         Edit.execute("UPDATE trackers SET current_price = ? WHERE id = ?", (current_price,tracker_id,))
+        print("chetori gigar tala?")
+        update_history(current_price, tracker_id)
+        update_predicition(tracker_id)
+        ###########
         Connection.commit()
         if current_price != None:
-            #current_price=1000000000000000
             if current_price <= target_price:
-                print("111111111")
                 send_email(email, product_url, current_price)
                 Edit.execute("UPDATE trackers SET notified = 1 WHERE id = ?", (tracker_id,))
                 Connection.commit()
@@ -151,12 +189,17 @@ def send_email(email, product_url, current_price):
         print("Error", response.status_code, response.text)
 
 def background_checker():
-    interval_hours = 6
+    #cambia este
+    interval_hours = random.randint(3,7)
     while True:
-        #print("checking")
-        check_prices()
-        #print("bekhab")
-        time.sleep(interval_hours * 3600)
+        print("checking")
+        try:
+            check_prices()
+        except Exception:
+            pass
+        finally:
+            #print("bekhab")
+            time.sleep(interval_hours * 60 + random.randint(0, 900))
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -176,7 +219,7 @@ def index():
             add_tracker(1,email,product_url,current_price,TargetPrice)
         return redirect(url_for('index'))
         
-    return render_template("form - Copy.html", price=price,trackers=trackers)
+    return render_template("form.html", price=price,trackers=trackers)
 
 
 if __name__ == "__main__":
