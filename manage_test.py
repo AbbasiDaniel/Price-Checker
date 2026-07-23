@@ -39,7 +39,7 @@ def get_driver():
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/147.0.7499.193 Safari/537.36",
     ]
     options.add_argument(f"user-agent={random.choice(user_agents)}")
-    driver = uc.Chrome(options=options, version_main=148)
+    driver = uc.Chrome(options=options, version_main=150)
     driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
@@ -87,7 +87,8 @@ def init_db():
             target_price REAL NOT NULL,
             notified BOOLEAN DEFAULT 0,
             price_history TEXT,
-            predicted_price TEXT
+            predicted_price_short TEXT,
+            predicted_price_long TEXT
         )
     """)
     Connection.commit()
@@ -105,8 +106,8 @@ def add_tracker(user_id, email, product_url,current_price, target_price):
 
 
 
-def update_predicition(tracker_id):
-    Connection = sqlite3.connect("trackers.db")
+def update_predicition(tracker_id, Connection):
+    #Connection = sqlite3.connect("trackers.db")
     Edit = Connection.cursor()
     Edit.execute("SELECT price_history FROM trackers WHERE id = ?", (tracker_id,))
     row = Edit.fetchone()
@@ -116,16 +117,21 @@ def update_predicition(tracker_id):
         price_list = []
     if len(price_list)>=10:
         predicted_price=price_ai.predict_price(price_list[len(price_list)-10 : len(price_list)])
-        predicted_price=json.dumps(predicted_price)
-        Edit.execute("UPDATE trackers SET predicted_price = ? WHERE id = ?", (predicted_price,tracker_id,))
+        predicted_price_short=json.dumps(predicted_price[:10])
+        predicted_price_long=json.dumps(predicted_price[10:])
+        Edit.execute("""
+        UPDATE trackers 
+        SET predicted_price_short = ?, predicted_price_long = ? 
+        WHERE id = ?
+        """, (predicted_price_short, predicted_price_long, tracker_id))
     
     Connection.commit()
-    Connection.close()
+    #Connection.close()
     return None
  
-def update_history(current_price, tracker_id):
+def update_history(current_price, tracker_id, Connection):
 
-    Connection = sqlite3.connect("trackers.db")
+    #Connection = sqlite3.connect("trackers.db")
     Edit = Connection.cursor()
     Edit.execute("SELECT price_history FROM trackers WHERE id = ?", (tracker_id,))
     row = Edit.fetchone()
@@ -137,7 +143,7 @@ def update_history(current_price, tracker_id):
     price_list=json.dumps(price_list)
     Edit.execute("UPDATE trackers SET price_history = ? WHERE id = ?", (price_list,tracker_id,))
     Connection.commit()
-    Connection.close()
+    #Connection.close()
     return None
 
 
@@ -152,8 +158,8 @@ def check_prices():
         #############
         Edit.execute("UPDATE trackers SET current_price = ? WHERE id = ?", (current_price,tracker_id,))
         print("chetori gigar tala?")
-        update_history(current_price, tracker_id)
-        update_predicition(tracker_id)
+        update_history(current_price, tracker_id, Connection)
+        update_predicition(tracker_id, Connection)
         ###########
         Connection.commit()
         if current_price != None:
@@ -190,21 +196,32 @@ def send_email(email, product_url, current_price):
 
 def background_checker():
     #cambia este
-    interval_hours = random.randint(3,7)
+    interval_hours = 1
     while True:
         print("checking")
-        try:
-            check_prices()
-        except Exception:
-            pass
-        finally:
+        #try:
+        check_prices()
+        #except Exception:
+            #pass
+        #finally:
             #print("bekhab")
-            time.sleep(interval_hours * 60 + random.randint(0, 900))
+        time.sleep(interval_hours * 3600 + random.randint(0, 900))
+
+
+def extract_prediction(tracker_id):
+    Connection = sqlite3.connect("trackers.db")
+    Edit = Connection.cursor()
+    Edit.execute("SELECT predicted_price FROM trackers WHERE id = ?", (tracker_id,))
+    row = Edit.fetchone()
+    predictions=json.loads(row)
+    Connection.close()
+    return predictions
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     price = None
     trackers = get_all_trackers()
+    #price_prediction=extract_prediction() 
     if request.method == "POST":
         product_url = request.form.get("ProductUrl")
         email = request.form.get("Email")
@@ -218,7 +235,7 @@ def index():
                 current_price = None
             add_tracker(1,email,product_url,current_price,TargetPrice)
         return redirect(url_for('index'))
-        
+       
     return render_template("form.html", price=price,trackers=trackers)
 
 
