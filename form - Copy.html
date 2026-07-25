@@ -2,131 +2,528 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Test Connection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Checker Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-    #submit
-    {
-        width: 500px;      
-        height: 40px;      
-        font-size: 18px;   
-        padding: 8px;
-        background-color: purple;
-    }
-    body
-    {
-        background-color: gray;
-    }
-    #c
-    {
-        position: fixed;
-        right :100px;
-        bottom: 415px;
-        color: aliceblue; 
-    }
-    #b
-    {
-        position : fixed;
-        left : 500px;
-        bottom :0px;
-        font-size: small;
-        color :chocolate;
-    }
-    #a
-    {
-        position: fixed;
-        font-size: larger;
-        color: purple;
-        background-color: gray;
-        width: 300px;
-        margin: 0px;  
-        padding: 0px;
-        left : 5px;
-        bottom: 165px;
-    }
-    input
-    {
-        width: 800px;      
-        height: 20px;      
-        font-size: 18px;   
-        padding: 8px;
-    }
-h3{
-    color : orangered;
-    
-}
-table {
-            position: fixed;
-            bottom: 50px;
-            right : 0px;
-            width: 42%;                
-            margin: 40px 40px 40px auto;   
-            border-collapse: collapse;
-            background-color: #f0f0f0;
+        :root {
+            --primary-color: #8b0000;
+            --secondary-color: #cc0000;
+            --accent-color: #ff3333;
+            --bg-color-1: #000000;
+            --bg-color-2: #0a0000;
+            --bg-color-3: #1a0000;
+            --glass-bg: rgba(164, 0, 0, 0.05);
+            --glass-border: rgba(164, 0, 0, 0.15);
+            --text-color: #f8f8f8;
         }
 
-th, td {
-            padding: 1px;
-            border: 1px solid yellowgreen;
-            text-align: center;
-            color : blue;
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-color-1), var(--bg-color-2), var(--bg-color-3), #050000);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            position: relative;
         }
 
-th {
-            background-color: #cf1616;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 51, 51, 0.1);
+            border: 1px solid var(--accent-color);
             color: white;
- }
-h1
-{
-  color: black;
-}
-#wowo
-{
-    color:black;
-}
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
 
+        .logout-btn:hover {
+            background: var(--accent-color);
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+            transform: translateY(-2px);
+            color: white;
+        }
 
+        .logout-btn::after {
+            display: none;
+        }
 
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #ff6666, #ff0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            font-weight: 700;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+        }
+
+        #wowo {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            margin-bottom: 50px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        a { color: var(--accent-color); text-decoration: none; transition: 0.3s; position: relative; }
+        a:hover { color: #ffffff; }
+        a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--accent-color);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+        a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255,255,255,0.05);
+            width: 100%;
+            max-width: 550px;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255,255,255,0.1);
+        }
+
+        .form-group { margin-bottom: 25px; position: relative; }
+        
+        h2 { 
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem; 
+            margin-bottom: 12px; 
+            color: #ff6666; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-family: 'Inter', sans-serif;
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.3);
+            transform: scale(1.02);
+        }
+
+        button#submit {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-color), #500000);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 15px;
+            box-shadow: 0 10px 20px rgba(139, 0, 0, 0.4);
+        }
+
+        button#submit:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 25px rgba(139, 0, 0, 0.6);
+        }
+
+        .table-container {
+            width: 100%;
+            max-width: 1150px;
+            overflow-x: auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 24px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            color: #ff6666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+
+        th:first-child { border-top-left-radius: 24px; }
+        th:last-child { border-top-right-radius: 24px; }
+
+        td {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255,255,255,0.85);
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            vertical-align: middle;
+        }
+
+        tr.main-row:hover td {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .price-current { color: #2ecc71; font-weight: 600; font-size: 1.1rem; }
+        .price-target { color: #ff7675; font-weight: 600; font-size: 1.1rem; }
+
+        .btn-chart {
+            background: rgba(255, 51, 51, 0.15);
+            border: 1px solid var(--accent-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .btn-chart:hover { background: var(--accent-color); box-shadow: 0 0 10px rgba(255, 51, 51, 0.5); }
+
+        .chart-row td {
+            padding: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-container-wrapper {
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .chart-toggle-btns { margin-bottom: 15px; }
+        .chart-toggle-btns button {
+            background: rgba(0,0,0,0.5); border: 1px solid #444; color: #ccc;
+            padding: 8px 20px; margin: 0 5px; border-radius: 5px; cursor: pointer; transition: 0.3s;
+        }
+        .chart-toggle-btns button.active, .chart-toggle-btns button:hover {
+            background: var(--primary-color); border-color: var(--accent-color); color: white;
+        }
+
+        .canvas-box {
+            position: relative; 
+            width: 100%;
+            max-width: 900px; 
+            height: 320px; 
+            margin: 0 auto; 
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+            box-sizing: border-box; 
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .empty-data-message {
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .empty-table-msg {
+            text-align: center;
+            padding: 40px !important;
+            color: rgba(255,255,255,0.5);
+            font-style: italic;
+        }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, var(--primary-color), var(--accent-color)); border-radius: 10px; }
     </style>
 </head>
 <body>
-    <h1>PRICE CHECKER.beta</h1>
-    <h2 id="wowo">working only in <a href="https://www.ebay.com/" target="_blank">ebay</a> And 
-        <a href="https://www.walmart.com/" target="_blank"> Wamlart </a> will be updated every 6 hours</h2>
-    <div id="a">
-    <form method="POST" action="/">
-        <h2>enter the link</h2>
-        <input type="text" name="ProductUrl" placeholder="Paste link here" required><br>
-        <h2>enter the price</h2>        
-        <input type="number" name="TargetPrice" placeholder="Paste link here" required><br>
-        <h2>enter the email</h2>
-        <input type="email" name="Email" placeholder="Paste link here" required><br>
-        <br>
-        <button id="submit" type="submit">Submit</button>
-    </form>
-    </div id ="b">
-    <div id="c">
-    <table>
-    <tr>
-        <th>ID</th>
-        <th>User ID</th>
-        <th>Email</th>
-        <th>Product URL</th>
-        <th>Cuurent price</th>
-        <th>Target Price</th>
-        <th>Notified</th>
-    </tr>
-    {% for t in trackers %}
-    <tr>
-        <td>{{ t.id }}</td>
-        <td>{{ t.user_id }}</td>
-        <td>{{ t.email }}</td>
-        <td><a href="{{ t.product_url }}" target="_blank">View Product</a></td>
-        <td>{{t.current_price}}</td>
-        <td>{{ t.target_price }}</td>
-        <td>{{ t.notified }}</td>
-    </tr>
-    {% endfor %}
-</table>
-</div>
+    
+    <a href="/logout" class="logout-btn">Logout</a>
+
+    <h1>AI Price Guardian<span style="font-size: 0.35em; opacity: 0.8; vertical-align: middle; background: #8b0000; padding: 4px 10px; border-radius: 8px; color: white; -webkit-text-fill-color: white;">BETA</span></h1>
+    <h2 id="wowo">Exclusively for <a href="https://www.ebay.com/" target="_blank">ebay.com</a> — Updated every 1 hour</h2>
+    
+    <div class="container">
+        <form method="POST" action="/">
+            <div class="form-group">
+                <h2>Product Link</h2>
+                <input type="text" name="ProductUrl" placeholder="Paste eBay URL here..." required>
+            </div>
+            <div class="form-group">
+                <h2>Target Price ($USD)</h2>
+                <input type="number" name="TargetPrice" placeholder="Enter desired price..." required>
+            </div>
+            <div class="form-group">
+                <h2>Email Address</h2>
+                <input type="email" name="Email" placeholder="Your notification email..." required>
+            </div>
+            <button id="submit" type="submit">Start Tracking</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Product</th>
+                    <th>Current</th>
+                    <th>Target</th>
+                    <th>Status</th>
+                    <th>Prediction</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in trackers %}
+                <tr class="main-row">
+                    <td>{{ t.id }}</td>
+                    <td>{{ t.user_id }}</td>
+                    <td>{{ t.email }}</td>
+                    <td><a href="{{ t.product_url }}" target="_blank">View Item</a></td>
+                    <td class="price-current">${{ t.current_price }}</td>
+                    <td class="price-target">${{ t.target_price }}</td>
+                    <td><span class="status-badge">{{ t.notified }}</span></td>
+                    <td><button class="btn-chart" onclick="toggleChart('{{ t.id }}')">📊 View</button></td>
+                </tr>
+                <tr id="chart-row-{{ t.id }}" class="chart-row" style="display: none;">
+                    <td colspan="8">
+                        <div class="chart-container-wrapper">
+                            {% if t.predicted_price_short or t.predicted_price_long %}
+                                
+                                <script type="application/json" id="chart-short-{{ t.id }}">
+                                    {{ t.predicted_price_short | safe if t.predicted_price_short else '[]' }}
+                                </script>
+
+                                <script type="application/json" id="chart-long-{{ t.id }}">
+                                    {{ t.predicted_price_long | safe if t.predicted_price_long else '[]' }}
+                                </script>
+
+                                <div class="chart-toggle-btns">
+                                    <button onclick="renderChart('{{ t.id }}', 'short')" class="active" id="btn-short-{{ t.id }}">Short-term (10)</button>
+                                    <button onclick="renderChart('{{ t.id }}', 'long')" id="btn-long-{{ t.id }}">Long-term (500)</button>
+                                </div>
+                                <div class="canvas-box">
+                                    <canvas id="chart-{{ t.id }}"></canvas>
+                                </div>
+                            {% else %}
+                                <div class="empty-data-message">
+                                    ⏳ The data collection needs at least 10 hours to be completed.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="empty-table-msg">No products are currently being tracked. Add your first item above!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const chartInstances = {};
+
+        function toggleChart(id) {
+            const row = document.getElementById('chart-row-' + id);
+            if (row.style.display === 'none') {
+                row.style.display = 'table-row';
+                
+                const canvas = document.getElementById('chart-' + id);
+                if (canvas && !chartInstances[id]) {
+                    renderChart(id, 'short');
+                }
+            } else {
+                row.style.display = 'none';
+            }
+        }
+
+    function renderChart(id, type) {
+        const canvas = document.getElementById('chart-' + id);
+        const dataScript = document.getElementById(`chart-${type}-${id}`);
+        if (!canvas || !dataScript) return;
+
+        document.getElementById('btn-short-' + id).classList.remove('active');
+        document.getElementById('btn-long-' + id).classList.remove('active');
+        document.getElementById('btn-' + type + '-' + id).classList.add('active');
+
+        let rawData = dataScript.textContent.trim();
+        if (!rawData || rawData === 'None' || rawData === '[]') {
+            console.warn(`No data found for ${type}-term prediction.`);
+            return;
+        }
+
+        let selectedData;
+        try {
+            selectedData = JSON.parse(rawData);
+        } catch (e) {
+            console.error("Invalid JSON format from DB column:", e);
+            return;
+        }
+
+        let chartLabels = [];
+        let chartData = [];
+
+        if (type === 'long') {
+            for (let i = 0; i < selectedData.length; i += 24) {
+                const dayNumber = Math.floor(i / 24) + 1;
+                chartLabels.push(`Day ${dayNumber}`);
+                chartData.push(parseFloat(selectedData[i]));
+            }
+        } else {
+            chartLabels = selectedData.map((_, i) => `Hour ${i + 1}`);
+            chartData = selectedData.map(val => parseFloat(val));
+        }
+
+        if (chartInstances[id]) {
+            chartInstances[id].destroy();
+        }
+
+        const ctx = canvas.getContext('2d');
+        
+        chartInstances[id] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: type === 'short' ? 'Short-term Pred ($)' : 'Long-term Daily Pred ($)',
+                    data: chartData,
+                    borderColor: '#ff3333',
+                    backgroundColor: 'rgba(255, 51, 51, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: type === 'short' ? 4 : 3, 
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { 
+                        grid: { color: 'rgba(255,255,255,0.05)' }, 
+                        ticks: { color: 'rgba(255,255,255,0.6)', font: { family: 'Inter' } } 
+                    },
+                    y: { 
+                        beginAtZero: false,
+                        grid: { color: 'rgba(255,255,255,0.05)' }, 
+                        ticks: { color: 'rgba(255,255,255,0.6)', font: { family: 'Inter' } } 
+                    }
+                },
+                plugins: {
+                    legend: { 
+                        labels: { color: '#f8f8f8', font: { family: 'Inter', size: 14 } } 
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { family: 'Inter' },
+                        bodyFont: { family: 'Inter' },
+                        borderColor: 'rgba(255, 51, 51, 0.5)',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+    }
+    </script>
 </body>
 </html>
