@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Red Sign Up Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        body {
+            background-color: #070203;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Pulsing Glow Background */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(220, 20, 60, 0.2) 0%, rgba(13, 2, 2, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+            animation: pulseGlow 9s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.95; }
+        }
+
+        /* Animated Floating Particle Layer */
+        .bg-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-particles span {
+            position: absolute;
+            display: block;
+            border-radius: 50%;
+            background: rgba(255, 51, 68, 0.5);
+            box-shadow: 0 0 10px rgba(255, 51, 68, 0.8);
+            bottom: -20px;
+            animation: floatUp 12s linear infinite;
+        }
+
+        .bg-particles span:nth-child(1) { left: 12%; width: 4px; height: 4px; animation-duration: 10s; animation-delay: 0s; }
+        .bg-particles span:nth-child(2) { left: 28%; width: 6px; height: 6px; animation-duration: 14s; animation-delay: 2s; background: rgba(255, 100, 110, 0.4); }
+        .bg-particles span:nth-child(3) { left: 45%; width: 3px; height: 3px; animation-duration: 11s; animation-delay: 4s; }
+        .bg-particles span:nth-child(4) { left: 63%; width: 5px; height: 5px; animation-duration: 13s; animation-delay: 1s; }
+        .bg-particles span:nth-child(5) { left: 82%; width: 4px; height: 4px; animation-duration: 9s; animation-delay: 3s; }
+        .bg-particles span:nth-child(6) { left: 93%; width: 3px; height: 3px; animation-duration: 15s; animation-delay: 5s; }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-105vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Card Container (Glassmorphism & Border Accent) */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(20, 7, 9, 0.82);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 51, 68, 0.2);
+            padding: 2.8rem 2.4rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.85),
+                0 0 35px rgba(189, 31, 45, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-container:hover {
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.9),
+                0 0 45px rgba(255, 51, 68, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        /* Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 30%, #ff4d5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #a08587;
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.45rem;
+            color: #d1b1b3;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1.05rem;
+            background-color: rgba(32, 12, 14, 0.75);
+            border: 1px solid rgba(85, 28, 33, 0.8);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-group input::placeholder {
+            color: #634b4d;
+        }
+
+        .form-group input:focus {
+            border-color: #ff3344;
+            background-color: rgba(42, 14, 17, 0.95);
+            box-shadow: 
+                0 0 0 4px rgba(255, 51, 68, 0.15),
+                0 0 18px rgba(255, 51, 68, 0.25);
+        }
+
+        /* Actions */
+        .submit-btn {
+            width: 100%;
+            padding: 0.88rem;
+            margin-top: 0.6rem;
+            background: linear-gradient(135deg, #d31d31 0%, #9e0e1e 100%);
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 0.98rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            box-shadow: 0 6px 20px rgba(189, 31, 45, 0.35);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #ff3344 0%, #bd1f2d 100%);
+            box-shadow: 0 8px 25px rgba(255, 51, 68, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 4px 12px rgba(189, 31, 45, 0.3);
+        }
+
+        /* Footer */
+        .login-footer {
+            margin-top: 1.8rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8c7375;
+        }
+
+        .login-footer a {
+            color: #ff4d5e;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 0.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .login-footer a:hover {
+            color: #ff7584;
+            text-shadow: 0 0 8px rgba(255, 51, 68, 0.35);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Particles Layer -->
+    <div class="bg-particles">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Create an Account</h1>
+            <p>Join us today! Please fill in your details.</p>
+        </div>
+
+        <form action="#" method="POST">
+            <!-- Username Field -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required autocomplete="username">
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="new-password">
+            </div>
+
+            <!-- Confirm Password Field -->
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••" required autocomplete="new-password">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">Sign Up</button>
+        </form>
+
+        <!-- Footer link back to Login -->
+        <div class="login-footer">
+            Already have an account? <a href="/login">Sign In</a>
+        </div>
+    </div>
+
+</body>
+</html>
