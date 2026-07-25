@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Red Gothic Login Page with Animation</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0d0202;
+            /* Updated background gradient for more depth */
+            background-image: radial-gradient(circle at center, #3d0c11 0%, #1a0305 60%, #0d0202 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden; /* Necessary for background animation */
+        }
+
+        /* --- Background Animation Elements --- */
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind everything */
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        .background-animation span {
+            position: absolute;
+            bottom: -20px; /* Start just below the screen */
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(220, 20, 60, 0.6); /* Crimson red, subtle */
+            box-shadow: 0 0 10px #ff3344;
+            opacity: 0;
+            animation: driftUp 10s infinite ease-out;
+        }
+
+        /* Variation for particles */
+        .background-animation span:nth-child(1) { left: 10%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: 1s; }
+        .background-animation span:nth-child(2) { left: 25%; width: 5px; height: 5px; animation-duration: 10s; animation-delay: 3s; background: rgba(255, 100, 100, 0.4); }
+        .background-animation span:nth-child(3) { left: 40%; width: 2px; height: 2px; animation-duration: 15s; animation-delay: 5s; }
+        .background-animation span:nth-child(4) { left: 60%; width: 6px; height: 6px; animation-duration: 8s; animation-delay: 2s; background: rgba(255, 160, 122, 0.5); } /* Light salmon, warm ember */
+        .background-animation span:nth-child(5) { left: 75%; width: 4px; height: 4px; animation-duration: 13s; animation-delay: 0s; }
+        .background-animation span:nth-child(6) { left: 90%; width: 3px; height: 3px; animation-duration: 11s; animation-delay: 4s; }
+        .background-animation span:nth-child(7) { left: 15%; width: 4px; height: 4px; animation-duration: 9s; animation-delay: 6s; }
+        .background-animation span:nth-child(8) { left: 50%; width: 2px; height: 2px; animation-duration: 14s; animation-delay: 1s; background: rgba(189, 31, 45, 0.7); }
+        .background-animation span:nth-child(9) { left: 80%; width: 5px; height: 5px; animation-duration: 10s; animation-delay: 3s; }
+        .background-animation span:nth-child(10){ left: 35%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: 5s; }
+
+        @keyframes driftUp {
+            0% {
+                opacity: 0;
+                transform: translateY(0) translateX(0);
+            }
+            10% {
+                opacity: 0.8; /* Fade in */
+            }
+            90% {
+                opacity: 0.8; /* Stay visible */
+            }
+            100% {
+                opacity: 0; /* Fade out */
+                transform: translateY(-105vh) translateX(30px); /* Drift up and slightly sideways */
+            }
+        }
+        /* --- End Background Animation --- */
+
+        /* Card Container */
+        .login-container {
+            position: relative; /* Above animation */
+            z-index: 1;
+            background-color: #160708;
+            border: 1px solid #3d1418;
+            padding: 2.5rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(220, 20, 60, 0.1); /* Added subtle red glow */
+        }
+
+        /* Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            font-size: 1.8rem;
+            color: #ff3344;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(255, 51, 68, 0.5); /* Text glow */
+        }
+
+        .login-header p {
+            color: #d8c3c5; /* Slightly brighter for contrast */
+            font-size: 0.9rem;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #e0c5c7;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #240c0e;
+            border: 1px solid #4a1a1e;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff3344;
+            background-color: #3d0c11; /* Slightly brighter focus bg */
+            box-shadow: 0 0 8px rgba(255, 51, 68, 0.4);
+        }
+
+        /* Options Row */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #c4adb0; /* Brighter */
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            accent-color: #ff3344;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #ff3344;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+            color: #ff6677;
+        }
+
+        /* Actions - Standard behavior */
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #bd1f2d;
+            border: none;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .submit-btn:hover {
+            background-color: #ff3344;
+            box-shadow: 0 0 15px rgba(255, 51, 68, 0.5); /* Glow on hover */
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Footer */
+        .login-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #c4adb0; /* Brighter */
+        }
+
+        .login-footer a {
+            color: #ff3344;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- New Background Animation Container -->
+    <div class="background-animation">
+        <!-- 10 animated particles/embers -->
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Welcome Back</h1>
+            <p>Please enter your credentials to log in.</p>
+        </div>
+
+        <form action="#" method="POST">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+
+            <button type="submit" class="submit-btn">Sign In</button>
+        </form>
+
+        <div class="login-footer">
+            Don't have an account? <a href="register">Sign up</a>
+        </div>
+    </div>
+
+</body>
+</html>
