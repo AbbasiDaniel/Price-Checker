@@ -1,4 +1,6 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, flash
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import check_password_hash, generate_password_hash
 import undetected_chromedriver as uc
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -13,22 +15,47 @@ import requests, json
 import price_ai
 import random
 app = Flask(__name__, template_folder='.')
-Api_Key="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"
+#Api_Key="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"
+Api_Key="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"
 CHROMEDRIVER_PATH = r"C:\Users\Daniel\Desktop\chromedriver144\chromedriver-win64\chromedriver.exe"
 SELENIUM_PROFILE = r"C:\Users\Daniel\Desktop\selenium_profile"
 
-def get_all_trackers():
+app.secret_key = 'javidshahjavidshahjavidshah'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+class User(UserMixin):
+    def __init__(self, id, username):
+        self.id = id
+        self.username = username
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = sqlite3.connect("trackers.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username FROM users WHERE id = ?", (user_id,))
+    user_row = cursor.fetchone()
+    conn.close()
+    
+    if user_row:
+        return User(id=str(user_row[0]), username=user_row[1])
+    return None
+
+def get_all_trackers(user_id):
     Connection = sqlite3.connect("trackers.db")
     Connection.row_factory = sqlite3.Row  
     Edit = Connection.cursor()
     #print("alllaaaahhh")
-    Edit.execute("SELECT * FROM trackers")
+    Edit.execute("SELECT * FROM trackers WHERE user_id = ?", (user_id,))
     rows = Edit.fetchall()
     Connection.close()
     return rows
 
 def get_driver():
     options = uc.ChromeOptions()
+    #options.add_argument("--headless")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--no-first-run")
     options.add_argument("--no-default-browser-check")
@@ -89,8 +116,17 @@ def init_db():
             price_history TEXT,
             predicted_price_short TEXT,
             predicted_price_long TEXT
+        
         )
     """)
+    Edit.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL
+        )
+    """)
+
     Connection.commit()
     Connection.close()
 
@@ -106,7 +142,7 @@ def add_tracker(user_id, email, product_url,current_price, target_price):
 
 
 
-def update_predicition(tracker_id, Connection):
+def update_predicition(tracker_id, Connection, email, product_url, target_price):
     #Connection = sqlite3.connect("trackers.db")
     Edit = Connection.cursor()
     Edit.execute("SELECT price_history FROM trackers WHERE id = ?", (tracker_id,))
@@ -117,6 +153,12 @@ def update_predicition(tracker_id, Connection):
         price_list = []
     if len(price_list)>=10:
         predicted_price=price_ai.predict_price(price_list[len(price_list)-10 : len(price_list)])
+        counter=0
+        #for price in predicted_price :
+            #counter=counter+1
+            #if(price <= target_price):
+                #send_email_update(email, product_url, price, counter)
+                #break
         predicted_price_short=json.dumps(predicted_price[:10])
         predicted_price_long=json.dumps(predicted_price[10:])
         Edit.execute("""
@@ -159,7 +201,7 @@ def check_prices():
         Edit.execute("UPDATE trackers SET current_price = ? WHERE id = ?", (current_price,tracker_id,))
         print("chetori gigar tala?")
         update_history(current_price, tracker_id, Connection)
-        update_predicition(tracker_id, Connection)
+        update_predicition(tracker_id, Connection, email, product_url, target_price)
         ###########
         Connection.commit()
         if current_price != None:
@@ -170,30 +212,67 @@ def check_prices():
                 
     Connection.close()
 
+import requests
+
 def send_email(email, product_url, current_price):
-    url = "https://api.sendgrid.com/v3/mail/send"
+    url = "https://api.brevo.com/v3/smtp/email"
+    
     headers = {
-        "Authorization": f"Bearer {Api_Key}",
-        "Content-Type": "application/json"
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": Api_Key
     }
+    
     data = {
-        "personalizations": [{
-            "to": [{"email": email}],
-            "subject": "Your product is now cheaper"
-        }],
-        "from": {"email": "pricechecker.alert@outlook.com"},
-        "content": [{
-            "type": "text/plain",
-            "value": f"Your product: {product_url} is now cheaper at {current_price}"
-        }]
+        "sender": {
+            "name": "Price Notifier",
+            "email": "pricechecker.alert@outlook.com"
+        },
+        "to": [
+            {
+                "email": email
+            }
+        ],
+        "subject": "Your product is now cheaper",
+        "textContent": f"Your product: {product_url} is now cheaper at {current_price}"
     }
+    
     response = requests.post(url, headers=headers, json=data)
 
-    if response.status_code == 202:
+    if response.status_code == 201:
         print("Success")
     else:
         print("Error", response.status_code, response.text)
 
+def send_email_update(email, product_url, current_price, hour):
+    url = "https://api.brevo.com/v3/smtp/email"
+    
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": Api_Key
+    }
+    
+    data = {
+        "sender": {
+            "name": "Price Notifier",
+            "email": "pricechecker.alert@outlook.com"
+        },
+        "to": [
+            {
+                "email": email
+            }
+        ],
+        "subject": "Your product might get cheaper",
+        "textContent": f"Your product: {product_url} might get cheaper at {current_price} by {hour} hours"
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 201:
+        print("Success")
+    else:
+        print("Error", response.status_code, response.text)
 def background_checker():
     #cambia este
     interval_hours = 1
@@ -205,7 +284,7 @@ def background_checker():
             #pass
         #finally:
             #print("bekhab")
-        time.sleep(interval_hours * 3600 + random.randint(0, 900))
+        time.sleep(interval_hours * 300 + random.randint(0, 900))
 
 
 def extract_prediction(tracker_id):
@@ -218,9 +297,10 @@ def extract_prediction(tracker_id):
     return predictions
 
 @app.route("/", methods=["GET", "POST"])
+@login_required
 def index():
     price = None
-    trackers = get_all_trackers()
+    trackers = get_all_trackers(current_user.id)
     #price_prediction=extract_prediction() 
     if request.method == "POST":
         product_url = request.form.get("ProductUrl")
@@ -233,11 +313,80 @@ def index():
                 current_price = get_price_from_walmart(product_url)
             except :
                 current_price = None
-            add_tracker(1,email,product_url,current_price,TargetPrice)
+            add_tracker(current_user.id,email,product_url,current_price,TargetPrice)
         return redirect(url_for('index'))
        
     return render_template("form.html", price=price,trackers=trackers)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
 
+        conn = sqlite3.connect("trackers.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, username, password_hash FROM users WHERE username = ?", (username,))
+        user_row = cursor.fetchone()
+        conn.close()
+        
+        if user_row and check_password_hash(user_row[2], password):
+            user_obj = User(id=str(user_row[0]), username=user_row[1])
+            login_user(user_obj) 
+            return redirect(url_for('index')) 
+        else:
+                return """
+                <script>
+                    alert("Username or email is incorrect");
+                    window.history.back();
+                </script>
+                """
+            
+    return render_template('login.html') 
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user() 
+    return redirect(url_for('login'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        re_password=request.form.get('confirm-password')
+        if(re_password!=password):
+                return """
+                <script>
+                    alert("Password does not match with the confirm-password");
+                    window.history.back();
+                </script>
+                """
+        
+        hashed_password = generate_password_hash(password, method='scrypt')
+        
+        try:
+           
+            conn = sqlite3.connect("trackers.db")
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+                (username, hashed_password)
+            )
+            conn.commit()
+            conn.close()
+            
+            return redirect(url_for('login'))
+            
+        except sqlite3.IntegrityError:
+                          return """
+                <script>
+                    alert("Username already taken, try another one :).");
+                    window.history.back();
+                </script>
+                """
+    return render_template('register.html')
 
 if __name__ == "__main__":
     init_db()
