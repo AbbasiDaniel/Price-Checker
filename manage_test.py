@@ -55,7 +55,9 @@ def get_all_trackers(user_id):
 
 def get_driver():
     options = uc.ChromeOptions()
-    #options.add_argument("--headless")
+    options.add_argument("--headless") 
+    options.add_argument("--no-sandbox") 
+    options.add_argument("--disable-dev-shm-usage") 
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--no-first-run")
     options.add_argument("--no-default-browser-check")
@@ -394,5 +396,5 @@ if __name__ == "__main__":
     thread = threading.Thread(target=background_checker)
     thread.daemon = True
     thread.start()
-
-    app.run(debug=True,use_reloader=False)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
