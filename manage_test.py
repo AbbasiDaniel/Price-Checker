@@ -56,34 +56,64 @@ def get_all_trackers(user_id):
     Connection.close()
     return rows
 
+import base64
+import random
+import undetected_chromedriver as uc
+
+
 def get_driver():
     options = uc.ChromeOptions()
     options.add_argument("--headless=new")
+
+    # ۱. اصلاح آی‌پـی و پورت پروکسی آمریکا (بدون یوزر و پسورد در این خط)
+    options.add_argument("--proxy-server=http://209.50.168.87:3129")
+
     options.add_argument("--window-size=1920,1080")
-    options.add_argument("--no-sandbox") 
-    options.add_argument("--disable-dev-shm-usage") 
-    options.add_argument('--blink-settings=imagesEnabled=false') # عکس لود نکنه تا رم پر نشه
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--blink-settings=imagesEnabled=false")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--no-first-run")
     options.add_argument("--no-default-browser-check")
     options.add_argument("--disable-infobars")
     options.add_argument("--disable-extensions")
+
     user_agents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/148.0.7559.60 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/147.0.7499.193 Safari/537.36",
     ]
     options.add_argument(f"user-agent={random.choice(user_agents)}")
     print("v :", uc.__version__, flush=True)
+
     driver = uc.Chrome(options=options, version_main=150, use_subprocess=True)
     print("retete")
-    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-        "source": """
+
+    # ۲. رمزگذاری و فعال‌سازی یوزرنیم و پسورد پروکسی روی هسته مرورگر
+    PROXY_USER = "b3bdzearxvdb"
+    PROXY_PASS = "2cwlwplhdgd7eyx"
+    raw_auth = f"{PROXY_USER}:{PROXY_PASS}"
+    encoded_auth = base64.b64encode(raw_auth.encode()).decode()
+
+    driver.execute_cdp_cmd("Network.enable", {})
+    driver.execute_cdp_cmd(
+        "Network.setExtraHTTPHeaders",
+        {"headers": {"Proxy-Authorization": f"Basic {encoded_auth}"}},
+    )
+
+    # ۳. کدهای آنتی‌دیتکت قبلی شما
+    driver.execute_cdp_cmd(
+        "Page.addScriptToEvaluateOnNewDocument",
+        {
+            "source": """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
         Object.defineProperty(navigator, 'plugins', {get: () => [1,2,3,4,5]})
         Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
         """
-    })
+        },
+    )
+
     return driver
+
 
 def get_price_with_selenium(url, wait_seconds=120):
     print("************************************************", flush=True)
