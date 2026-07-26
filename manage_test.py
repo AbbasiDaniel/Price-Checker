@@ -73,8 +73,8 @@ def get_driver():
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/147.0.7499.193 Safari/537.36",
     ]
     options.add_argument(f"user-agent={random.choice(user_agents)}")
-    print("eeeee")
-    driver = uc.Chrome(options=options)
+    print("v :", uc.__version__, flush=True)
+    driver = uc.Chrome(options=options, use_subprocess=False)
     print("retete")
     driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
@@ -87,9 +87,9 @@ def get_driver():
 
 def get_price_with_selenium(url, wait_seconds=120):
     print("************************************************", flush=True)
-    driver = get_driver()
-    print(">>> BEFORE TRY BLOCK <<<", flush=True)
     try:
+        driver = get_driver()
+        print(">>> BEFORE TRY BLOCK <<<", flush=True)
         driver.get(url)
         time.sleep(30)
         print("Page Title is:", driver.title)
