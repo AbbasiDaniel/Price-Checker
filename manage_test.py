@@ -15,6 +15,9 @@ import requests, json
 import price_ai
 import random
 app = Flask(__name__, template_folder='.')
+print("====================================", flush=True)
+print("🚀 APP / SCRAPER IS STARTING RIGHT NOW!", flush=True)
+print("====================================", flush=True)
 #Api_Key="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"
 Api_Key="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"
 CHROMEDRIVER_PATH = r"C:\Users\Daniel\Desktop\chromedriver144\chromedriver-win64\chromedriver.exe"
@@ -340,7 +343,7 @@ def login():
         else:
                 return """
                 <script>
-                    alert("Username or email is incorrect");
+                    alert("Username or Password is incorrect");
                     window.history.back();
                 </script>
                 """
