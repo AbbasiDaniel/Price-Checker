@@ -104,7 +104,6 @@ def get_price_with_selenium(url, wait_seconds=120):
         return None
     except Exception as e:
         print("❌ ERROR during scraping:", str(e), flush=True)
-        traceback.print_exc()
     finally:
         driver.quit()
 
@@ -314,9 +313,11 @@ def extract_prediction(tracker_id):
 @login_required
 def index():
     price = None
+    print("base khodaya")
     trackers = get_all_trackers(current_user.id)
     #price_prediction=extract_prediction() 
     if request.method == "POST":
+        print("namoosan?")
         product_url = request.form.get("ProductUrl")
         email = request.form.get("Email")
         TargetPrice=request.form.get("TargetPrice")
