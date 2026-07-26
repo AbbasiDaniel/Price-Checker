@@ -286,7 +286,7 @@ def background_checker():
             #pass
         #finally:
             #print("bekhab")
-        time.sleep(interval_hours * 300 + random.randint(0, 900))
+        time.sleep(interval_hours * 3600 + random.randint(0, 900))
 
 
 def extract_prediction(tracker_id):
