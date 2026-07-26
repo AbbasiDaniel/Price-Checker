@@ -69,7 +69,7 @@ def get_driver():
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/147.0.7499.193 Safari/537.36",
     ]
     options.add_argument(f"user-agent={random.choice(user_agents)}")
-    driver = uc.Chrome(options=options, version_main=150)
+    driver = uc.Chrome(options=options)
     driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
