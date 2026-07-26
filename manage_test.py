@@ -74,7 +74,7 @@ def get_driver():
     ]
     options.add_argument(f"user-agent={random.choice(user_agents)}")
     print("v :", uc.__version__, flush=True)
-    driver = uc.Chrome(options=options, version_main=150, use_subprocess=False)
+    driver = uc.Chrome(options=options, version_main=150, use_subprocess=True)
     print("retete")
     driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": """
