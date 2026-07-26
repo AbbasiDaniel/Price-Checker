@@ -65,9 +65,10 @@ def make_predictions(X, W1, b1, W2, b2, W3, b3):
     return A3
 
 def predict_price(prices):
-    initial_volatility = np.std(prices)
-    maxy = np.mean(prices)
     
+    maxy = np.mean(prices)
+    initial_volatility = max(np.std(prices),maxy * 0.001)
+    #delet the max in case
     W1, b1, W2, b2, W3, b3 = init_params()
     
     for i in range(500):
