@@ -324,6 +324,7 @@ def index():
             print("adding...")
             try:
                 current_price = get_price_from_walmart(product_url)
+                print("donbal bakhtam bodi gigar tala?")
             except :
                 current_price = None
             add_tracker(current_user.id,email,product_url,current_price,TargetPrice)
@@ -403,7 +404,7 @@ def register():
 
 if __name__ == "__main__":
     init_db()
-    #print("working woooowwww")
+    print("working woooowwww")
     thread = threading.Thread(target=background_checker)
     thread.daemon = True
     thread.start()
