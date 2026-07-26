@@ -118,6 +118,9 @@ def get_driver():
 def get_price_with_selenium(url, wait_seconds=120):
     print("************************************************", flush=True)
     try:
+        driver.get("https://www.ebay.com")
+        time.sleep(15)
+        print("daram miam bala saret")
         driver = get_driver()
         print(">>> BEFORE TRY BLOCK <<<", flush=True)
         driver.get(url)
