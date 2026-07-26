@@ -55,7 +55,8 @@ def get_all_trackers(user_id):
 
 def get_driver():
     options = uc.ChromeOptions()
-    options.add_argument("--headless") 
+    options.add_argument("--headless=new")
+    options.add_argument("--window-size=1920,1080")
     options.add_argument("--no-sandbox") 
     options.add_argument("--disable-dev-shm-usage") 
     options.add_argument("--disable-blink-features=AutomationControlled")
@@ -82,7 +83,7 @@ def get_price_with_selenium(url, wait_seconds=120):
     driver = get_driver()
     try:
         driver.get(url)
-        time.sleep(10)
+        time.sleep(30)
         spans = driver.find_elements(By.CSS_SELECTOR, "span.ux-textspans")
         for span in spans:
             print(2)
