@@ -109,6 +109,7 @@ def get_price_with_selenium(url, wait_seconds=120):
         driver.quit()
 
 def get_price_from_walmart(url):
+    print("00000000000000000000000000")
     price = get_price_with_selenium(url, wait_seconds=15)
     if price is not None:
         print("Price found via Selenium:", price, flush=True)
