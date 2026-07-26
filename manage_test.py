@@ -84,6 +84,7 @@ def get_driver():
 
 def get_price_with_selenium(url, wait_seconds=120):
     driver = get_driver()
+    print(">>> BEFORE TRY BLOCK <<<", flush=True)
     try:
         driver.get(url)
         time.sleep(30)
