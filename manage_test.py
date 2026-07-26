@@ -62,6 +62,7 @@ def get_driver():
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--no-sandbox") 
     options.add_argument("--disable-dev-shm-usage") 
+    options.add_argument('--blink-settings=imagesEnabled=false') # عکس لود نکنه تا رم پر نشه
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--no-first-run")
     options.add_argument("--no-default-browser-check")
@@ -83,6 +84,7 @@ def get_driver():
     return driver
 
 def get_price_with_selenium(url, wait_seconds=120):
+    print("************************************************", flush=True)
     driver = get_driver()
     print(">>> BEFORE TRY BLOCK <<<", flush=True)
     try:
