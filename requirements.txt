@@ -1,8 +1,10 @@
-Flask==2.3.2
-undetected-chromedriver==3.1.6
+Flask
+Flask-Login
+Werkzeug
 selenium
-webdriver-manager==3.8.6
-requests==2.31.0
-flask-cors
-gunicorn
-
+undetected-chromedriver
+webdriver-manager
+requests
+numpy
+pandas
+matplotlib
