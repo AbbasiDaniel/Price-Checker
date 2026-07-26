@@ -22,4 +22,4 @@ COPY . .
 ENV PORT=10000
 EXPOSE 10000
 
-CMD ["python", "app.py"]
+CMD ["python", "manage_test.py"]
