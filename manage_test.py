@@ -128,7 +128,7 @@ def get_price_with_selenium(url, wait_seconds=120):
         driver.get(url)
         time.sleep(30)
         print("Page Title is:", driver.title)
-        print(driver.page_source[:2000], flush=True)
+        print(driver.page_source, flush=True)
         spans = driver.find_elements(By.CSS_SELECTOR, "span.ux-textspans")
         for span in spans:
             #print(2)
