@@ -99,6 +99,9 @@ def get_price_with_selenium(url, wait_seconds=120):
                     num = "".join(c for c in text if c.isdigit() or c == ".")
                 return float(num)
         return None
+    except Exception as e:
+        print("❌ ERROR during scraping:", str(e), flush=True)
+        traceback.print_exc()
     finally:
         driver.quit()
 
