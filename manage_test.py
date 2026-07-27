@@ -16,6 +16,7 @@ import price_ai
 import random
 import base64
 import json
+import tempfile
 app = Flask(__name__, template_folder='.')
 print("====================================", flush=True)
 print("🚀 APP / SCRAPER IS STARTING RIGHT NOW!", flush=True)
