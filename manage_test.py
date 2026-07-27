@@ -14,6 +14,8 @@ from flask import redirect, url_for
 import requests, json 
 import price_ai
 import random
+import base64
+import json
 app = Flask(__name__, template_folder='.')
 print("====================================", flush=True)
 print("🚀 APP / SCRAPER IS STARTING RIGHT NOW!", flush=True)
@@ -56,65 +58,118 @@ def get_all_trackers(user_id):
     Connection.close()
     return rows
 
-import base64
-import random
-import undetected_chromedriver as uc
+
+def create_proxy_extension(host, port, username, password):
+    path = tempfile.mkdtemp()
+
+    # ساخت مانیفست با دیکشنری پایتون برای جلوگیری از تداخل کوتیشن‌ها در گیت‌هاب
+    manifest_data = {
+        "version": "1.0",
+        "manifest_version": 3,
+        "name": "Proxy Auth Extension",
+        "permissions": [
+            "proxy",
+            "tabs",
+            "unlimitedStorage",
+            "storage",
+            "webRequest",
+            "webRequestAuthProvider"
+        ],
+        "host_permissions": [
+            "<all_urls>"
+        ],
+        "background": {
+            "service_worker": "background.js"
+        },
+        "minimum_chrome_version": "22.0.0"
+    }
+
+    # استفاده از triple single-quotes (''') برای تداخل نداشتن با " داخل جاوااسکریپت
+    background = f'''
+var config = {{
+    mode: "fixed_servers",
+    rules: {{
+        singleProxy: {{
+            scheme: "http",
+            host: "{host}",
+            port: parseInt({port})
+        }},
+        bypassList: ["localhost"]
+    }}
+}};
+
+chrome.proxy.settings.set({{value: config, scope: "regular"}}, function() {{}});
+
+function callbackFn(details) {{
+    return {{
+        authCredentials: {{
+            username: "{username}",
+            password: "{password}"
+        }}
+    }};
+}}
+
+chrome.webRequest.onAuthRequired.addListener(
+    callbackFn,
+    {{urls: ["<all_urls>"]}},
+    ['blocking']
+);
+'''
+
+    with open(os.path.join(path, "manifest.json"), "w", encoding="utf-8") as f:
+        json.dump(manifest_data, f, indent=4)
+
+    with open(os.path.join(path, "background.js"), "w", encoding="utf-8") as f:
+        f.write(background)
+
+    return path
 
 
 def get_driver():
     options = uc.ChromeOptions()
-    options.add_argument("--headless=new")
-
-    # ۱. اصلاح آی‌پـی و پورت پروکسی آمریکا (بدون یوزر و پسورد در این خط)
-    options.add_argument("--proxy-server=http://209.50.168.87:3129")
-
+    
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
-    options.add_argument("--blink-settings=imagesEnabled=false")
     options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--blink-settings=imagesEnabled=false")
     options.add_argument("--no-first-run")
-    options.add_argument("--no-default-browser-check")
     options.add_argument("--disable-infobars")
-    options.add_argument("--disable-extensions")
-    options.add_argument("--single-process")
+
     user_agents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/148.0.7559.60 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/147.0.7499.193 Safari/537.36",
     ]
     options.add_argument(f"user-agent={random.choice(user_agents)}")
-    print("v :", uc.__version__, flush=True)
 
-    driver = uc.Chrome(options=options, version_main=150, use_subprocess=True)
-    print("retete")
+    extension = create_proxy_extension(
+        host="209.50.175.32",
+        port=3129,
+        username="b3bdzearxvdb",
+        password="2cwlwplhdgd7eyx"
+    )
+    
+    options.add_argument(f"--load-extension={extension}")
 
-    # ۲. رمزگذاری و فعال‌سازی یوزرنیم و پسورد پروکسی روی هسته مرورگر
-    PROXY_USER = "b3bdzearxvdb"
-    PROXY_PASS = "2cwlwplhdgd7eyx"
-    raw_auth = f"{PROXY_USER}:{PROXY_PASS}"
-    encoded_auth = base64.b64encode(raw_auth.encode()).decode()
-
-    driver.execute_cdp_cmd("Network.enable", {})
-    driver.execute_cdp_cmd(
-        "Network.setExtraHTTPHeaders",
-        {"headers": {"Proxy-Authorization": f"Basic {encoded_auth}"}},
+    driver = uc.Chrome(
+        options=options,
+        version_main=150, 
+        use_subprocess=False
     )
 
-    # ۳. کدهای آنتی‌دیتکت قبلی شما
+    cdp_script = (
+        "Object.defineProperty(navigator,'webdriver',{get:()=>undefined});\n"
+        "Object.defineProperty(navigator,'plugins',{get:()=>[1,2,3,4,5]});\n"
+        "Object.defineProperty(navigator,'languages',{get:()=>['en-US','en']});"
+    )
+
     driver.execute_cdp_cmd(
         "Page.addScriptToEvaluateOnNewDocument",
-        {
-            "source": """
-        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-        Object.defineProperty(navigator, 'plugins', {get: () => [1,2,3,4,5]})
-        Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
-        """
-        },
+        {"source": cdp_script}
     )
 
     return driver
-
 
 def get_price_with_selenium(url, wait_seconds=120):
     print("************************************************", flush=True)
