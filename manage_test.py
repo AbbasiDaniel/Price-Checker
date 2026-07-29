@@ -150,9 +150,9 @@ def get_driver():
         username="b3bdzearxvdb",
         password="2cwlwplhdgd7eyx"
     )
-    
+    print("1000")
     options.add_argument(f"--load-extension={extension}")
-
+    print("ratatatatata")
     driver = uc.Chrome(
         options=options,
         version_main=150, 
