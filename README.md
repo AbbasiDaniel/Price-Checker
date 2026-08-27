@@ -4,14 +4,6 @@
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white) ![Selenium](https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white) ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) ![Brevo API](https://img.shields.io/badge/Brevo_API-0092FF?style=for-the-badge&logo=sendinblue&logoColor=white)
 
----
-
-## Visual Demo
-
-![Price Guardian Dashboard](https://via.placeholder.com/800x400.png?text=Price+Guardian+Dashboard+Demo)
-*A look at the user dashboard where you can add product trackers, view price histories, and see AI predictions.*
-
----
 
 ## Architecture Pipeline
 
