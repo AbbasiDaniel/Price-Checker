@@ -15,7 +15,7 @@
 
 ---
 
-## 🛠️ Technical Challenges & Solution
+##  Technical Challenges & Solution
 
 The hardest part of building Price Guardian was dealing with anti-bot detection on e-commerce websites. Normal Selenium scripts were blocked almost instantly. On top of that, running Chrome in headless mode made it really tricky to use proxies that require a username and password authentication.
 
